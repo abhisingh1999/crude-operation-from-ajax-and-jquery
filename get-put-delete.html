@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    input {
+      margin: 10px;
+    }
+    table,
+    tr,
+    th,
+    td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 10px;
+    }
+  </style>
+  <body>
+    <section>
+      <fieldset>
+        <legend>
+          <h2>Original Form</h2>
+        </legend>
+        <form action="" id="form">
+          <input type="hidden" id="studentId" />
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Name" />
+          <br />
+          <label for="rollno">rollno</label>
+          <input type="number" id="rollno" placeholder="rollno" />
+          <br />
+          <label for="age">Age</label>
+          <input type="number" id="age" placeholder="Age" />
+          <br />
+          <label for="division">division</label>
+          <input type="text" id="division" placeholder="division" />
+          <br />
+
+          <input type="submit" value="submit" id="btn" />
+          <input type="reset" value="reset" />
+        </form>
+      </fieldset>
+      <table id="table">
+        <thead>
+          <th>Name</th>
+          <th>rollno</th>
+          <th>Age</th>
+          <th>division</th>
+          <th>Action</th>
+        </thead>
+        <tbody id="demo"></tbody>
+      </table>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://kit.fontawesome.com/1762bdfaa7.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+      //post
+      $(function () {
+        var studentList = [];
+        var tbody = $("#demo");
+        $("#form").on("submit", function () {
+          event.preventDefault();
+
+          var std = {
+            id: $("#studentId").val(),
+            name: $("#name").val(),
+            rollno: $("#rollno").val(),
+            age: $("#age").val(),
+            division: $("#division").val(),
+          };
+
+          if (std.id == "") {
+            $.ajax({
+              method: "POST",
+              dataType: "json",
+              url: "https://63ac417034c46cd7ae7c275e.mockapi.io/student",
+              data: std,
+              success: function (student) {
+                updateTable(student);
+                formClear();
+              },
+            });
+          } else {
+            $.ajax({
+              method: "PUT",
+              dataType: "json",
+              url:
+                "https://63ac417034c46cd7ae7c275e.mockapi.io/student/" + std.id,
+              data: std,
+              success: function (student) {
+                $("[edit=" + std.id + "]")
+                  .parents("tr")[0]
+                  .remove();
+                updateTable(student);
+                formClear();
+              },
+            });
+          }
+        });
+
+        $.ajax({
+          method: "GET",
+          dataType: "json",
+          url: "https://63ac417034c46cd7ae7c275e.mockapi.io/student",
+          success: function (data) {
+            studentList = data;
+            studentList.forEach((student) => {
+              updateTable(student);
+            });
+          },
+        });
+
+        function updateTable(student) {
+          let txt = "";
+          txt += "<tr>";
+          txt += "<td>" + student.name + "</td>";
+          txt += "<td>" + student.rollno + "</td>";
+          txt += "<td>" + student.age + "</td>";
+          txt += "<td>" + student.division + "</td>";
+          txt += "<td>";
+          txt += "<button edit='" + student.id + "'>Edit</button>";
+          txt += "<button delete='" + student.id + "'>Delete</button>";
+          txt += "</td>";
+          txt += "</tr>";
+          tbody.append(txt);
+          $('[edit="' + student.id + '"]').click(() => {
+            fillForm(student.id);
+          });
+          $('[delete="' + student.id + '"]').click(() => {
+            deleteStudent(student.id);
+          });
+        }
+
+        function formClear() {
+          $("#name").val("");
+          $("#rollno").val("");
+          $("#age").val("");
+          $("#division").val("");
+        }
+
+        function fillForm(id) {
+          $.ajax({
+            method: "GET",
+            dataType: "json",
+            url: "https://63ac417034c46cd7ae7c275e.mockapi.io/student/" + id,
+            success: function (student) {
+              $("#studentId").val(student.id);
+              $("#name").val(student.name);
+              $("#rollno").val(student.rollno);
+              $("#age").val(student.age);
+              $("#division").val(student.division);
+            },
+          });
+        }
+
+        function deleteStudent(id) {
+          $.ajax({
+            method: "DELETE",
+            dataType: "json",
+            url: "https://63ac417034c46cd7ae7c275e.mockapi.io/student/" + id,
+            success: function (student) {
+              $("[delete=" + id + "]")
+                .parents("tr")[0]
+                .remove();
+            },
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

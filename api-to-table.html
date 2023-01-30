@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <section class="container my-3">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Brand</th>
+            <th>Color</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody id="demo"></tbody>
+      </table>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://kit.fontawesome.com/1762bdfaa7.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+      $(function () {
+        var carList = [];
+        var tbody = $("#demo");
+
+        $.ajax({
+          method: "GET",
+          dataType: "json",
+          url: "https://62e1182cfa99731d75cdd699.mockapi.io/Car",
+          success: function (data) {
+            carList = data;
+
+            carList.forEach(function (car) {
+              let txt = "";
+              txt += "<tr>";
+              txt += "<td>" + car.id + "</td>";
+              txt += "<td>" + car.brand + "</td>";
+              txt += "<td>" + car.color + "</td>";
+              txt += "<td>" + car.price + "</td>";
+              txt += "</tr>";
+              tbody.append(txt);
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
